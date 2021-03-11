@@ -1,0 +1,219 @@
+------------------------------------------------------------------------------------------------
+set echo on
+spool output.txt
+
+spool off
+set echo off
+	(echo - include spool command in output
+	 spool - save output from the run)
+------------------------------------------------------------------------------------------------
+drop table name purge;
+	drop table name cascade constraints purge;
+
+create table name (
+attri CHAR(3) not null
+	constraint uq_attri unique,
+attri VARCHAR2(50) not null,
+attri NUMBER(8,2) not null,
+attri DATE not null,
+constraint name_pk primary key(attri),
+constraint name_name_fk foreign key (attri) 
+references name(attri) on delete set null,
+constraint ck_attri CHECK (attri >100),
+constraint ck_attri CHECK (attri in ('a', 'b', 'c'))
+);
+
+create table name 
+as select * from name where attri = 'xx';
+
+alter table customer add constraint customer_agent_fk foreign key (attri)
+references agent (attri) on delete set null;
+alter table name add constraint uq_attri unique(attri);
+alter table name add (attri number(2,0) default 6);
+
+alter table name drop constraint table_name_fk;
+alter table name add constraint table_name_fk foreign key (attri) references table(attri) on delete cascade;
+
+comment on column name.attri is 'name attri';
+
+------------------------------------------------------------------------------------------------
+insert into name values(xx,xx,xx);
+insert into name values(name_seq.nextval,null,xx);
+	(first time use the new sequence)
+insert into name values (name_seq.currval,null,xx);
+	(remaining time use the same sequence)
+insert into name values((select attri from name where attri='xx'),null,xx);
+	(select from where == column table row)
+commit;
+
+drop sequence name_seq;
+create sequence name_seq start with 100 increment by 1;
+
+select * from cat; 
+	(view all tables and sequences you own,check if table exists)
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+
+desc uni.table;
+	(view notnull attri type size, uni is the user who has created tables for you)
+
+select fname || ' ' || lname as fullname, to_char(cltime,'HHAM') as time, nvl(to_char(mark,'999'),'N/A') as mark
+from table t JOIN name n on t.id=n.id JOIN unit u ON n.code=u.code
+where attri like 'FIT%' AND attri like '%a%' AND attri is null
+AND (   (to_char(attri,'yyyy') = '2021') or (to_char(attri,'yyyy')='2012')   ) 
+AND attri between 80 and 100 AND n.code = 1
+order by fullname, t.id;
+
+select u1.unitcode, u1.unitname, haspre as preunitcode, u2.unitname as preunitname
+from unit u1 JOIN prereq p on u1.unitcode = p.unitcode JOIN unit u2 ON p.haspre= u2.unitcode
+order by u1.unitcode, preunitcode;
+
+'DD-Mon-YYYY HH24:MI:SS'
+'$99,990.99'
+'$9,999.99'
+
+select max(mark) as max_mark, min(dob), count(DISTINCT id) as total, to_char(avg(mark),'990.99') as 'Average',
+          CASE grade when 'D' then 'Distinction' when 'HD' then 'High Distinction' END as 'explained_grade',
+          to_char(nvl(round(avg(mark),2),0),'990.99')
+from table left outer join name using (year,semester,code)
+where to_char(ofyear,'yyyy')='2019'
+	AND attri not in (select code from name)
+group by attri
+	*exists when using max min avg count
+having count(attri) >=1
+order by total;
+	*born on 1990 is smaller but elder than 1999
+	 被SELECT也要被GROUP BY不然error
+
+------------------------------------------------------------------------------------------------
+select * from table
+MINUS
+select * from table t join name n on t.code=n.code;
+
+from ((offer o left outer join enrol e on 
+o.code=e.code AND o.sem=e.sem AND o.year = e.year)
+join staff s on o.chief=s.id)
+join unit u on o.code=u.code
+
+WHERE
+    studid IN (
+        SELECT
+            studid
+        FROM
+            uni.enrolment
+            NATURAL JOIN uni.unit
+        WHERE
+            lower(unitname) = lower('Introduction to databases')
+            AND semester = 1
+            AND to_char(ofyear, 'yyyy') = '2020'
+        INTERSECT
+        SELECT
+            studid
+        FROM
+            uni.enrolment
+            NATURAL JOIN uni.unit
+        WHERE
+            lower(unitname) = lower('Introduction to computer architecture and networks')
+            AND semester = 1
+            AND to_char(ofyear, 'yyyy') = '2020')
+
+select 'Lecture' as type, count(*) as no from where group by order by
+UNION
+select 'Tutorial' as type, count(*) as no from where group by order by
+
+select (r)lpad(to_char(nvl(,0),'$990.99'),12,' ')
+|
+round(avg(attri),2)
+OR
+select sum(attri)*3 from where
+
+------------------------------------------------------------------------------------------------
+select
+to_char(,'990.99') as WAM,       |mark*level/level
+to_char(,'990.99') as GPA          |grade*credit/credit 4321 0.3
+
+sum(
+CASE 
+when mark is not null AND
+substr(unitcode,4,1) = '1' then mark*3
+when mark is not null AND
+substr(unitcode,4,1) <> '1' then mark*6
+END)/
+sum(
+CASE 
+when mark is not null AND
+substr(unitcode,4,1) = '1' then 3
+when mark is not null AND
+substr(unitcode,4,1) <> '1' then 6
+END)
+
+sum(
+CASE
+when mark is not null AND grade = 'HD' then 4
+when mark is not null AND grade = 'D' then 3
+when mark is not null AND grade = 'C' then 2
+when mark is not null AND grade = 'P' then 1
+when mark is not null AND grade = 'N' then 0.3
+END *6)/(count(mark)*6)
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+update table 
+set attri = 'D'
+where attri >= 75 AND attri <= 84;
+commit;
+
+--Alternative 
+update table 
+set grade = 
+CASE when mark between 75 and 84 then 'D' when mark between 85 and 100 then 'HD' END;
+commit;
+
+
+delete from student where stu_nbr = 11111113;
+	return error "integrity constraint (AAA.FK_ENROLMENT_STUDENT) violated - child record found"
+
+delete from enrolment where stu_nbr = 11111113;
+delete from student where stu_nbr = 11111113;
+commit;
+	(child records need to be deleted first and then the parent record
+	delete fk first then pk)
+
+--Alternative 
+alter table enrolment drop constraint STUDENT_ENROLMENT_FK;
+alter table enrolment add constraint STUDENT_ENROLMENT_FK 
+  foreign key (stu_nbr) references student (stu_nbr) on delete cascade;
+delete from student where stu_nbr = 11111113;
+commit;
+------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------
+algebra
+
+R = π attri,attri TABLE
+R = π attri,attri (σ attri = 3 and attri = 33 TABLE)
+R = π a,b (    (π c(σ attri=3 TABLE)) ⨝ (π c,a,b TABLE)    )
+R = π d,e ((π a,b (    (π c(σ attri=3 TABLE)) ⨝ (π c,a,b TABLE)    )) ⨝ TABLE)
+	*n of ⨝ == 2n+1 of π
+------------------------------------------------------------------------------------------------
+normalisation
+m - remove key & add PK
+pt - not remove key
+
+UNF:
+1NF:      
+Partial dependency
+2NF:
+Transitive dependency
+3NF:
+Full dependencies:
+
+Attribute sythesis:
+	* union the entity with same PK
+------------------------------------------------------------------------------------------------
+shared lock or exclusive lock, same column
+S(Tn) always can be concurrent
+X(Tn) can be concurrent with S(Tn)
+Tm wait Tn: X(Tm) cannot concurrent with S(Tn) or X(Tn)
+*no loop depicted, so no deadlock
+------------------------------------------------------------------------------------------------
+
+
