@@ -1,0 +1,81 @@
+#5
+1.beta = Covar(security i's returns,All Ords returns)/Varp(All Ords returns) 
+           = Slope(security i's returns,All Ords returns)
+				      [ie.All Ords returns=S&P500]
+
+2. equation of Security Market Line (SML) 
+ = Intercept(mean of the six securities,beta of the six securities)
+ = Slope(mean of the six securities,beta of the six securities) 
+ = Rsq(mean of the six securities,beta of the six securities) 
+
+3.one of the portfolio sd is equal to the sd of the All Ords
+goal seek -> set sd(portfolio) = sd(S&P500) by changing increment
+
+4.market porfolio = w1*x+w2*y
+annual return of the market portfolio for each year
+=mmult(table_ret_each_yr,market_portfolio)
+
+
+______________________________________________________________________________
+#4
+find 2 efficient portfolios
+step1 mean returns minus constant (rc=r-c)
+step2 solve for z and x,y
+z =mmult(minverse(table_var_covar),rc)
+x or y = z / sum(z)    [x or y,z,r is vertical]
+   
+mean =mmult(transpose(x or y),r)  [ctrl+shift+enter]
+variance=mmult(transpose(x or y),mmult(table_vae_covar,x or y)) [ctrl+shift+enter]
+covariance =mmult(transpose(x),mmult(table_vae_covar, y)) [ctrl+shift+enter]
+correlation coefficient = covariance/(sd1*sd2)
+______________________________________________________________________________
+#3
+=ln()
+=exp()
+=NormSDist()
+excess returns = returns that year - average returns for several years
+matrixA transpose-matrixAT
+var_covar = AT*A = mmult(table_AT,table_A)
+_____________________________________________________________________________
+#2
+rt = ln(Pt/Pt-1)
+=average()
+=varp()
+population(sigma)
+=stdevp() = {[∑(ri-mean)^2]/(n)}^0.5
+sample
+=stdev() = {[∑(ri-mean)^2]/(n-1)}^0.5
+
+
+[two stocks]
+=average[∑(rA-E(rA))*(rB-E(rB))]
+=covar(tableA,tableB)=[∑(rA-E(rA))*(rB-E(rB))]/M
+=correl(tableA, tableB)
+
+=w1*r1+w2*r2
+=w1^2*var1+w2^2*var2+2*w1*w2*cov(stock1,stock2)
+=sqrt()
+
+mean: weights times returns (2 portfolios)
+=mmult(A1:C1, D1:D3)
+variance:  ( 1x4, ( 4x4,4x1))
+=mmult(weightsA,mmult(table_vae_covar,weightsA))
+covariance  ( 1x4, ( 4x4,4x1))    [4x1 is the other stock’s]
+=mmult(weightsA,mmult(table_vae_covar,weightsB))
+correlation coefficient = cov(r1,r2)/(sd1,sd2)
+
+___________________________________________________________________________
+#1 
+=average()
+=varp()
+=stdevp() 
+
+[highlight the new place for the table]
+=transpose(A1:C3)   (original table)
+[ctrl+shift+enter]
+
+[highlight the table - multiple columns without the headlines]
+Data -> What-If Analysis -> Data Table
+|Row input cell: A2  ie.dividends
+|Column input cell: A1 (dynamic cell from the original source) ie.rate of return
+|Corner  C3 (=resulting cell from the source) ie.Price of share

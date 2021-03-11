@@ -1,0 +1,505 @@
+#! moving average & no outliers
+    Dim ma, all As Double
+    Dim norows As Integer
+    Dim nocols As Integer
+    norows = Range("in").Rows.count
+    nocols = Range("in").Columns.count
+    
+    For j = 1 To nocols
+        For i = 4 To norows
+            For k = 0 To 3
+                all = all + Range("in").Cells(i - k, j)
+            Next k
+            ma = all / 4
+            Range("out").Cells(i, j) = ma
+            ma = 0
+            all = 0
+        Next i
+    Next j
+---------------------------------------------------------------------
+    Dim sd, ma, all, calc, count(), store() As Double
+    Dim norows As Integer
+    Dim nocols As Integer
+    norows = Range("in").Rows.count
+    nocols = Range("in").Columns.count
+    ReDim store(1 To norows, 1 To nocols)
+    ReDim count(1 To norows, 1 To nocols)
+    
+    For j = 1 To nocols
+    
+        For i = 4 To norows
+    
+    
+            For k = 0 To 3
+                If Range("in").Cells(i - k, j) > (Range("out").Cells(i, j) + Range("R43").Cells(1, j)) Or Range("in").Cells(i - k, j) < (Range("out").Cells(i, j) - Range("R43").Cells(1, j)) Then
+                    store(i - k, j) = 0
+                    count(i - k, j) = 0
+                Else: store(i - k, j) = Range("in").Cells(i - k, j)
+                      count(i - k, j) = 1
+                End If
+                all = all + store(i - k, j)
+                calc = calc + count(i - k, j)
+            Next k
+        
+            ma = all / calc
+            Range("lll").Cells(i, j) = ma
+            
+            calc = 0
+            ma = 0
+            all = 0
+            
+        Next i
+    Next j
+
+
+______________________________________________________________________________
+#6 Sorting row (4"")
+
+    Dim norows As Integer
+    Dim nocols As Integer
+    norows = Range("xx").Rows.Count
+    nocols = Range("xx").Columns.Count
+    Dim num As Double
+    Dim store() As Double
+    ReDim store(1 To norows, 1 To nocols)
+    
+    For j = 1 To nocols
+        For i = 1 To norows
+            store(i, j) = Range("xx").Cells(i, j).Value
+        Next i
+    Next j
+    
+    For j = 1 To nocols
+        For i = 1 To norows
+            For a = i - 1 To 1 Step -1
+                If store(a + 1, j) < store(a, j) Then
+                    num = store(a + 1, j)
+                    store(a + 1, j) = store(a, j)
+                    store(a, j) = num
+                End If
+            Next a
+        Next i
+    Next j
+    
+    For j = 1 To nocols
+        For i = 1 To norows
+            Range("out").Cells(i, j) = store(i, j)
+        Next i
+    Next j
+
+----------------------------------------------------------------------------------------
+     Sorting column (4"")
+    Dim norows As Integer
+    Dim nocols As Integer
+    norows = Range("xx").Rows.Count
+    nocols = Range("xx").Columns.Count
+    Dim num As Double
+    Dim store() As Double
+    ReDim store(1 To norows, 1 To nocols)
+    
+    For j = 1 To nocols
+        For i = 1 To norows
+            store(i, j) = Range("xx").Cells(i, j).Value
+        Next i
+    Next j
+    
+    For i = 1 To norows
+        For j = 1 To nocols
+            For a = j - 1 To 1 Step -1
+                If store(i, a + 1) < store(i, a) Then
+                    num = store(i, a + 1)
+                    store(i, a + 1) = store(i, a)
+                    store(i, a) = num
+                End If
+            Next a
+        Next j
+    Next i
+    
+    
+    For j = 1 To nocols
+        For i = 1 To norows
+            Range("output1").Cells(i, j) = store(i, j)
+        Next i
+    Next j
+
+________________________________________________________________________________________
+#5 matrix + transpose
+
+    Dim norowsA As Integer
+    Dim nocolsA As Integer
+    norowsA = Range("one").Rows.Count
+    nocolsA = Range("one").Columns.Count
+    Dim store() As Double
+    ReDim store(1 To nocolsA, 1 To norowsA)
+    
+        For j = 1 To nocolsA
+            For i = 1 To norowsA
+                store(j, i) = Range("one").Cells(i, j)
+            Next i
+        Next j
+    
+    Dim sum As Double
+    Dim norowsB As Integer
+    Dim nocolsB As Integer
+    norowsB = Range("two").Rows.Count
+    nocolsB = Range("two").Columns.Count
+    
+        If norowsA = norowsB Then
+            For i = 1 To nocolsA
+                For j = 1 To nocolsB
+                    For k = 1 To norowsA
+                        sum = sum + store(i, k) * Range("two").Cells(k, j)
+                    Next k
+                    Range("J37").Cells(i, j) = sum
+                    sum = 0
+                Next j
+            Next i
+        Else: MsgBox ("Matirces Do Not Conform")
+        End If
+_________________________________________________________________________________________
+#4 matrix  & transpose
+        
+    Dim sum As Double
+    Dim norowsA As Integer
+    Dim nocolsA As Integer
+    Dim norowsB As Integer
+    Dim nocolsB As Integer
+    norowsA = Range("A").Rows.Count
+    nocolsA = Range("A").Columns.Count
+    norowsB = Range("B").Rows.Count
+    nocolsB = Range("B").Columns.Count
+    
+        If nocolsA = norowsB Then
+            For i = 1 To norowsA
+                For j = 1 To nocolsB
+                    For k = 1 To nocolsA
+                        sum = sum + Range("A").Cells(i, k) * Range("B").Cells(k, j)
+                    Next k
+                    Range("output").Cells(i, j) = sum
+                    sum = 0
+                Next j
+            Next i
+        Else: MsgBox ("Matirces Do Not Conform")
+        End If
+-----------
+[transpose]
+    Dim norows As Integer
+    Dim nocols As Integer
+    norows = Range("table3").Rows.Count
+    nocols = Range("table3").Columns.Count
+    Dim store() As Double
+    ReDim store(1 To nocols, 1 To norows)
+    
+        For j = 1 To nocols
+            For i = 1 To norows
+                store(j, i) = Range("table3").Cells(i, j)
+                Range("output1").Cells(j, i) = store(j, i)
+            Next i
+        Next j
+--------------
+##test3 matrix all absolute value
+
+    Dim rowsA, rowsB, colsA, colsB As Integer
+    
+    rowsA = A.Rows.Count
+    colsA = A.Columns.Count
+    rowsB = B.Rows.Count
+    colsB = B.Columns.Count
+    
+    Dim sum, sumAB As Double
+    Dim product() As Double
+    ReDim product(1 To rowsA, 1 To colsB)
+    
+    If colsA = rowsB Then
+        For j = 1 To colsB
+            For i = 1 To rowsA
+                For k = 1 To colsA
+                    sum = sum + A.Cells(i, k) * B.Cells(k, j)
+                Next k
+                product(i, j) = sum
+                
+                If product(i, j) < 0 Then
+                    For k = 1 To colsA
+                        sumAB = sumAB + Abs(A.Cells(i, k)) * Abs(B.Cells(k, j))
+                    Next k
+                    product(i, j) = sumAB
+                    my_mult = product
+                Else
+                    my_mult = product
+                End If
+                sum = 0
+                sumAB = 0
+                
+            Next i
+        Next j
+    Else
+        MsgBox ("Incompatible dimensions")
+    End If
+-------------
+[code plan]
+Sub
+'Matrix multiply -> MatrixA x MatrixB
+'step1.determine dimension and check for conformance
+'colsA = rowsB
+If colsA = rowsB Then
+'set the size of output matrix
+'Element counter
+'run matrix multiplication
+'step2.iterate through the output 
+'rows from MatrixA and cols from MatrixB
+For i = 1 To rowsA
+For j = 1 To colsB
+'step3. output(i, j) = DotProduct(Rows_i, Columns_j)
+For k = 1 To Elements
+'output(i,j) = sum(  MatrixA(i,k)*MatrixB(k,j)  )
+Next k
+'Fill output matrix
+Next j
+Next i 
+Else 'Error for non-conformance
+End If
+End Sub
+
+
+_____________________________________________________________________________
+#3 condition3 take precedence over 1,2
+
+    Dim norows As Double
+    Dim nocols As Double
+    norows = Range("weekly2").Rows.Count
+    nocols = Range("weekly2").Columns.Count
+    
+    Dim neg As Integer
+    
+        For i = 1 To norows
+            For a = 1 To nocols
+                If Range("six").Cells(i, a) < 0 Then
+                    neg = neg + 1
+                End If
+            Next a
+                
+            For j = 1 To nocols
+                If neg > 3 Then
+                    If Range("six").Cells(i, j) < 0 Then
+                        Range("output").Cells(i, j) = "Bear Market"
+                    Else: Range("output").Cells(i, j) = "Contrarian"
+                    End If
+                    
+                Else
+                    If Range("six").Cells(i, j) < -0.02 Then
+                        Range("output").Cells(i, j) = "<-2%"
+                    ElseIf Range("six").Cells(i, j) > 0.05 Then
+                        Range("output").Cells(i, j) = ">5%"
+                    Else: Range("output").Cells(i, j) = Range("E34").Cells(i, j)
+                    End If
+                End If
+                
+            Next j
+            neg = 0
+        Next i
+
+    
+---------------------------------------------------------------------------
+### condition4 take precedence over 3 And 1,2
+    Dim norows As Double
+    Dim nocols As Double
+    norows = Range("weekly2").Rows.Count
+    nocols = Range("weekly2").Columns.Count
+     
+    Dim neg As Integer
+    Dim sum, average() As Double
+    ReDim average(1, 1 To nocols) As Double
+    
+        For i = 1 To norows
+            For a = 1 To nocols
+                If Range("six").Cells(i, a) < 0 Then
+                    neg = neg + 1
+                End If
+            Next a
+                
+            For j = 1 To nocols
+                For b = 1 To norows
+                    sum = sum + Range("six").Cells(b, j)
+                Next b
+                average(1, j) = sum / norows
+                sum = 0
+                
+                If Range("six").Cells(i, j) > 2 * average(1, j) And Range("six").Cells(i, j) < 0.06 Then
+                    Range("output").Cells(i, j) = "Bull Week"
+                    
+                ElseIf neg > 3 Then
+                    If Range("six").Cells(i, j) < 0 Then
+                        Range("output").Cells(i, j) = "Bear Market"
+                    Else: Range("output").Cells(i, j) = "Contrarian"
+                    End If
+                    
+                Else
+                    If Range("six").Cells(i, j) < -0.02 Then
+                        Range("output").Cells(i, j) = "<-2%"
+                    ElseIf Range("six").Cells(i, j) > 0.05 Then
+                        Range("output").Cells(i, j) = ">5%"
+                    Else: Range("output").Cells(i, j) = Range("E34").Cells(i, j)
+                    End If
+                End If
+                
+            Next j
+        Next i
+
+______________________________________________________________________________
+#2 If condition
+Dim Count As Integer
+Dim norows As Integer
+Dim nocols As Integer
+norows = Range("weekly").Rows.Count
+nocols = Range("weekly").Columns.Count
+For j = 1 To nocols
+    For i = 1 To norows
+    If  Then
+    Else
+    End If
+    Next i
+Next j
+_________________________________________________________________________
+##test2 excellent code plan
+Dim all variables
+Count rows and columns
+Start for loop from 1 to number of stocks in series
+	Start a loop from 1 to number of returns per stock
+		Sum returns for each stock
+	Increase counter
+	Calculate average (Divide sum by number of returns)
+	Start a loop from 1 to number of returns per stock
+		Calculate Standard deviation
+	Increase Counter
+Increase counter
+Start loop from 1 to number or stocks in series (i)
+	Start a loop from 1 to 4 (j)
+		Sum last for returns (sum=sum+range.cells(n+1-j, i))
+	Increase counter
+	Calculate moving average(divide sum by 4)
+Increase counter
+Start loop from 1 to number of stocks in series
+	n=4
+	Start loop from 1 to n
+		Check if abs(return - moving average)>SD
+			n=n-1
+		Else	Tally = Tally + return
+	Increase counter
+	Calculate moving average without outliers (Tally/n)
+Increase counter
+_________________________________________________________________________
+##test1 reversing the order of both the columns and the rows
+    Dim norows As Integer
+    Dim nocols As Integer
+    norows = Range("tt").Rows.Count
+    nocols = Range("tt").Columns.Count
+    
+    Dim c, k As Integer
+    c = 1
+    k = 1
+    
+        For j = nocols To 1 Step -1
+            For i = norows To 1 Step -1
+                Range("F14").Cells(c, k) = Range("tt").Cells(i, j)
+                c = c + 1
+            Next i
+            c = 1
+            k = k + 1
+        Next j
+__________________________________________________________________________
+#1 avg & sd
+    Dim calc, norows, nocols, store() As Double
+    norows = Range("xx").Rows.Count
+    nocols = Range("xx").Columns.Count
+    ReDim store(1 To norows, 1 To nocols)
+    
+        For j = 1 To nocols
+            For i = 1 To norows
+                calc = calc + Range("xx").Cells(i, j)
+            Next i
+            store(i, 1) = calc / norows
+            calc = 0
+        Next j
+        functionname = store
+--------------------
+    
+    Dim square, calc, norows, nocols, store() As Double
+    norows = Range("xx").Rows.Count
+    nocols = Range("xx").Columns.Count
+    ReDim store(1 To norows, 1 To nocols)
+    
+        For j = 1 To nocols
+        
+            For i = 1 To norows
+                calc = calc + Range("xx").Cells(i, j)
+            Next i
+            store(1, j) = calc / norows
+    
+            For i = 1 To norows
+                square = square + (Range("xx").Cells(i, j) - store(1, j)) ^ 2
+            Next i
+            Range("output").Cells(1, j) = (square / (norows - 1)) ^ 0.5
+            calc = 0
+            square = 0
+            
+        Next j
+
+😊😊😊
+________________________________________________________
+condition if:
+If (one AND two)
+OR three Then do...
+Else do...
+End If
+If one AND two
+Then do...
+ElseIf one OR wo
+Then do...
+Else do...
+End If
+____________________________________________________________________________________
+Dim norows As Integer
+Dim nocols As Integer
+norows = Range("six_stocks").Rows.Count
+nocols = Range("six_stocks").Columns.Count
+For j = 1 To nocols
+    For i = 1 To norows
+    Next i
+Next j
+
+Dim norows As Integer
+Dim nocols As Integer
+norows = Range("six_stocks").Rows.Count
+nocols = Range("six_stocks").Columns.Count
+For i = 1 To norows
+    For j = 1 To nocols
+    Next j
+Next i
+--------------------------------------------------------------------------------------	
+Range("A1").GoalSeek Goal:=15, ChangingCell:=Range("B2")
+
+Range("tran1").Value = Application.WorksheetFunction.transpose(Range("area"))                                                                                        [incorrect, must use store]
+=Log()  (ln)
+=Exp()
+=Application.NormSDist()
+
+
+Dim x As Integer/Double/String/Variant
+Dim store() As Double
+ReDim store(1 To norows, 1 To nocols)
+Range("A1").Cells(x,x)
+Range("Xx:Xx").Cells/Rows/Columns.Count
+Range("Xx:Xx").Values = left/right(xx,1)
+Range("U47:AB56").ClearContents
+
+MsgBox("text")
+
+Function xxx2(fill)
+xxx2 = 
+End Function
+
+Sub xxx1()
+End Sub
+
+Lian Chen
+lche0073@student.monash.edu
